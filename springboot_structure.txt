@@ -1,0 +1,118 @@
+user-service/                                   # Root folder (1 repo Git)
+├── .github/                                    # GitHub Actions CI/CD
+│   └── workflows/
+│       ├── ci.yml                             # Build & Test
+│       ├── cd.yml                             # Deploy to K8s
+│       └── sonar.yml                          # Code Quality
+├── .vscode/                                   # VSCode settings (optional)
+│   ├── settings.json
+│   └── launch.json
+├── config/                                    # Config files
+│   ├── docker-compose.yml                     # Local dev (DB, Kafka, Redis...)
+│   ├── k8s/                                   # Kubernetes manifests
+│   │   ├── deployment.yaml
+│   │   ├── service.yaml
+│   │   ├── ingress.yaml
+│   │   └── configmap.yaml
+│   └── helm/                                  # Helm charts (optional)
+│       ├── Chart.yaml
+│       ├── values.yaml
+│       └── templates/
+├── docs/                                      # Documentation
+│   ├── API.md                                 # OpenAPI docs
+│   ├── README.md                              # Service overview
+│   └── CHANGELOG.md                           # Version history
+├── src/
+│   ├── main/
+│   │   ├── java/com/example/userservice/      # Base package
+│   │   │   ├── UserServiceApplication.java    # Main class
+│   │   │   ├── config/                        # Configuration classes
+│   │   │   │   ├── DatabaseConfig.java
+│   │   │   │   ├── SecurityConfig.java
+│   │   │   │   ├── SwaggerConfig.java
+│   │   │   │   └── WebConfig.java
+│   │   │   ├── controller/                    # REST Controllers
+│   │   │   │   ├── dto/                       # Request/Response DTOs
+│   │   │   │   │   ├── request/
+│   │   │   │   │   │   ├── CreateUserRequest.java
+│   │   │   │   │   │   └── UpdateUserRequest.java
+│   │   │   │   │   └── response/
+│   │   │   │   │       ├── UserResponse.java
+│   │   │   │   │       └── PagedUserResponse.java
+│   │   │   │   ├── advice/                    # Global Exception Handler
+│   │   │   │   │   └── GlobalExceptionHandler.java
+│   │   │   │   └── UserController.java
+│   │   │   ├── domain/                        # Business Domain
+│   │   │   │   ├── model/                     # JPA Entities
+│   │   │   │   │   ├── User.java
+│   │   │   │   │   ├── UserAddress.java
+│   │   │   │   │   └── enums/
+│   │   │   │   │       └── Role.java
+│   │   │   │   ├── event/                     # Domain Events
+│   │   │   │   │   └── UserCreatedEvent.java
+│   │   │   │   └── exception/                 # Custom Exceptions
+│   │   │   │       ├── UserNotFoundException.java
+│   │   │   │       └── UserAlreadyExistsException.java
+│   │   │   ├── service/                       # Business Logic
+│   │   │   │   ├── impl/                      # Service implementations
+│   │   │   │   │   ├── UserServiceImpl.java
+│   │   │   │   │   └── EmailServiceImpl.java
+│   │   │   │   ├── port/                      # Service interfaces (ports & adapters)
+│   │   │   │   │   ├── UserService.java
+│   │   │   │   │   └── EmailService.java
+│   │   │   │   └── event/                     # Event Publisher/Listener
+│   │   │   │       └── UserEventPublisher.java
+│   │   │   ├── repository/                    # Data Access
+│   │   │   │   ├── entity/                    # JPA Entities (alternative)
+│   │   │   │   │   └── UserEntity.java
+│   │   │   │   ├── jpa/                       # JPA Repositories
+│   │   │   │   │   ├── UserJpaRepository.java
+│   │   │   │   │   └── UserAddressJpaRepository.java
+│   │   │   │   └── dto/                       # Repository DTOs
+│   │   │   │       └── UserProjection.java
+│   │   │   ├── client/                        # External API Clients
+│   │   │   │   ├── feign/                     # Feign Clients
+│   │   │   │   │   └── NotificationClient.java
+│   │   │   │   └── rest/                      # RestTemplate clients
+│   │   │   │       └── NotificationRestClient.java
+│   │   │   ├── security/                      # Security
+│   │   │   │   ├── jwt/                       # JWT utilities
+│   │   │   │   │   └── JwtUtil.java
+│   │   │   │   └── auth/                      # Auth filters
+│   │   │   │       └── JwtAuthenticationFilter.java
+│   │   │   └── util/                          # Utilities
+│   │   │       ├── mapper/                    # Object mappers
+│   │   │       │   └── UserMapper.java
+│   │   │       ├── constants/                 # Constants
+│   │   │       │   └── ErrorCode.java
+│   │   │       └── validators/                # Custom validators
+│   │   │           └── EmailValidator.java
+│   │   │   └── resources/
+│   │   │       ├── application.yml            # Main config
+│   │   │       ├── application-dev.yml        # Dev profile
+│   │   │       ├── application-prod.yml       # Prod profile
+│   │   │       ├── bootstrap.yml              # Bootstrap config
+│   │   │       ├── static/                    # Static resources
+│   │   │       │   └── swagger-ui/
+│   │   │       └── templates/                 # Thymeleaf (optional)
+│   │   └── kotlin/                            # Kotlin sources (optional)
+│   └── test/
+│       ├── java/com/example/userservice/      # Unit & Integration tests
+│       │   ├── controller/
+│       │   │   └── UserControllerTest.java
+│       │   ├── service/
+│       │   │   └── UserServiceTest.java
+│       │   ├── repository/
+│       │   │   └── UserRepositoryTest.java
+│       │   └── config/
+│       │       └── TestcontainersConfig.java
+│       └── resources/
+│           ├── test-application.yml
+│           └── test-data.sql
+├── mvnw                                        # Maven wrapper
+├── mvnw.cmd                                    # Windows
+├── pom.xml                                     # Maven dependencies
+├── Dockerfile                                  # Docker build
+├── docker-compose.yml                          # Local dev stack
+├── Jenkinsfile                                 # Jenkins CI/CD (optional)
+└── README.md                                   # Project overview

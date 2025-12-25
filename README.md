@@ -1,1 +1,1 @@
-# interest-project
+# SmartEvents

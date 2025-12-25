@@ -1,0 +1,144 @@
+<!-- src/main/resources/templates/registration-confirmation.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Confirmed</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #4CAF50;
+            margin: 0;
+        }
+        .ticket-info {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .ticket-info h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .info-row {
+            display: flex;
+            margin: 10px 0;
+        }
+        .info-label {
+            font-weight: bold;
+            width: 100px;
+            color: #666;
+        }
+        .info-value {
+            color: #333;
+        }
+        .qr-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px dashed #4CAF50;
+            border-radius: 10px;
+        }
+        .qr-section img {
+            max-width: 200px;
+            height: auto;
+        }
+        .ticket-code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #888;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎉 You're In!</h1>
+        <p>Your registration is confirmed</p>
+    </div>
+
+    <p>Hi <strong th:text="${userName}">User</strong>,</p>
+
+    <p>Great news! Your registration for the following event has been confirmed:</p>
+
+    <div class="ticket-info">
+        <h3 th:text="${eventTitle}">Event Title</h3>
+        <div class="info-row">
+            <span class="info-label">📅 Date:</span>
+            <span class="info-value" th:text="${eventDate}">January 1, 2025</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">⏰ Time:</span>
+            <span class="info-value" th:text="${eventTime}">10:00 AM</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">📍 Location:</span>
+            <span class="info-value" th:text="${eventLocation}">Event Location</span>
+        </div>
+    </div>
+
+    <div class="qr-section">
+        <h3>Your Ticket QR Code</h3>
+        <p>Show this QR code at the entrance for quick check-in</p>
+        <img th:src="'cid:' + ${qrCodeCid}" alt="QR Code"/>
+        <div class="ticket-code" th:text="${ticketCode}">TKT-XXXXXX</div>
+    </div>
+
+    <div style="text-align: center;">
+        <a th:href="${eventUrl}" class="cta-button">View Event Details</a>
+    </div>
+
+    <h3>What to bring:</h3>
+    <ul>
+        <li>This email or the QR code on your phone</li>
+        <li>A valid ID for verification</li>
+    </ul>
+
+    <div class="footer">
+        <p>If you have any questions, please contact our support team.</p>
+        <p>© 2025 Event Platform. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

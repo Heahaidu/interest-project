@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "title": "Ticket Confirmed",
+    "message": "You have successfully booked tickets for Tech Conference 2024.",
+    "time": "2 mins ago",
+    "isRead": false,
+    "type": "success"
+  },
+  {
+    "id": "2",
+    "title": "Event Reminder",
+    "message": "Summer Music Festival starts tomorrow at 18:00.",
+    "time": "1 hour ago",
+    "isRead": false,
+    "type": "info"
+  },
+  {
+    "id": "3",
+    "title": "New Event Nearby",
+    "message": "A new Art Exhibition has been scheduled near your location.",
+    "time": "5 hours ago",
+    "isRead": true,
+    "type": "info"
+  },
+  {
+    "id": "4",
+    "title": "Payment Update",
+    "message": "Your payment method is about to expire.",
+    "time": "1 day ago",
+    "isRead": true,
+    "type": "warning"
+  }
+]
