@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/chatbot")
+@RequestMapping("/api/v1/chatbot")
 public class ChatController {
 
     @Autowired
