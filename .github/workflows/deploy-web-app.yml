@@ -18,7 +18,7 @@ env:
   BUILD_DIR: frontend/out
   S3_BUCKET: ${{ vars.S3_BUCKET_FE }}
   CLOUDFRONT_DIST_ID: ${{ vars.CLOUDFRONT_DIST_ID }}
-
+  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to S3
