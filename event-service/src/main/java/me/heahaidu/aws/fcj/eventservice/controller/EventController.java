@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/events")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class EventController {
@@ -34,7 +34,7 @@ public class EventController {
     private final EventInterestService eventInterestService;
     private final EventRegisterService eventRegisterService;
 
-    @GetMapping("/events")
+    @GetMapping
     public ResponseEntity<EventListResponse> getEvents(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
@@ -51,13 +51,13 @@ public class EventController {
         return ResponseEntity.ok(eventListResponse);
     }
 
-    @GetMapping("/event/{eventId}")
+    @GetMapping("/{eventId}")
     public ResponseEntity<EventResponse> getEvent(@PathVariable UUID eventId) {
         EventResponse eventResponse = eventService.getEvent(eventId);
         return ResponseEntity.ok(eventResponse);
     }
     @PostMapping(
-            value = "/event/create",
+            value = "/create",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
 
@@ -78,7 +78,7 @@ public class EventController {
     }
 
 
-    @PostMapping("/event/edit/{eventUuid}")
+    @PostMapping("/edit/{eventUuid}")
     public ResponseEntity<EventResponse> editEvent(
             @PathVariable UUID eventUuid,
             @RequestHeader("X-User-UUID") UUID userUuid,
@@ -88,25 +88,25 @@ public class EventController {
         return ResponseEntity.ok(event);
     }
 
-    @GetMapping("/event/delete/{eventId}")
+    @GetMapping("/delete/{eventId}")
     public ResponseEntity<EventResponse> deleteEvent(@PathVariable UUID eventId, @RequestHeader("X-User-UUID") UUID userUuid) {
         eventService.deleteEvent(userUuid, eventId);
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/event/hide/{eventId}")
+    @GetMapping("/hide/{eventId}")
     public ResponseEntity<EventResponse> hideEvent(@PathVariable UUID eventId, @RequestHeader("X-User-UUID") UUID userUuid) {
         eventService.hideEvent(userUuid, eventId);
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/event/show/{eventId}")
+    @GetMapping("/show/{eventId}")
     public ResponseEntity<EventResponse> showEvent(@PathVariable UUID eventId, @RequestHeader("X-User-UUID") UUID userUuid) {
         eventService.showEvent(userUuid, eventId);
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/event/registration/{eventId}")
+    @GetMapping("/registration/{eventId}")
     public ResponseEntity<?> registerEvent(
             @PathVariable UUID eventId,
             @RequestHeader("X-User-UUID") UUID userUuid,
@@ -115,7 +115,7 @@ public class EventController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/event/unregistration/{eventId}")
+    @GetMapping("/unregistration/{eventId}")
     public ResponseEntity<?> unregisterEvent(
             @PathVariable UUID eventId,
             @RequestHeader("X-User-UUID") UUID userUuid,
@@ -124,7 +124,7 @@ public class EventController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/event/interest/{eventUuid}")
+    @GetMapping("/interest/{eventUuid}")
     public ResponseEntity<?> interestEvent(
             @PathVariable UUID eventUuid,
             @RequestHeader("X-User-UUID") UUID userUuid) {
@@ -133,7 +133,7 @@ public class EventController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/event/uninterest/{eventUuid}")
+    @GetMapping("/uninterest/{eventUuid}")
     public ResponseEntity<?> uninterestEvent(
             @PathVariable UUID eventUuid,
             @RequestHeader("X-User-UUID") UUID userUuid) {
@@ -141,7 +141,7 @@ public class EventController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/event/registration/{eventUuid}/qr-code")
+    @GetMapping("/registration/{eventUuid}/qr-code")
     public ResponseEntity<byte[]> getQrCode(
             @PathVariable UUID eventUuid,
             @RequestHeader("X-User-UUID") UUID userUuid
@@ -154,7 +154,7 @@ public class EventController {
                 .body(qrImage);
     }
 
-    @PostMapping("/events/{eventUuid}/check-in")
+    @PostMapping("/{eventUuid}/check-in")
     public ResponseEntity<?> checkIn(
             @PathVariable UUID eventUuid,
             @RequestBody QrCheckInRequest request,

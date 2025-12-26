@@ -1,0 +1,66 @@
+name: Frontend - build/push & deploy (CFN)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "frontend/**"
+      - "infra/**"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  STACK_NAME: internship-project
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & push frontend image
+        id: build
+        run: |
+          TAG=${GITHUB_SHA}
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          IMAGE="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${{ vars.ECR_REPO_FE }}:${TAG}"
+          docker build -f frontend/Dockerfile -t "$IMAGE" frontend
+          docker push "$IMAGE"
+          echo "FE_IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      - name: Read current backend images from CloudFormation (keep unchanged)
+        run: |
+          get_param () {
+            aws cloudformation describe-stacks \
+              --stack-name "${STACK_NAME}" \
+              --query "Stacks[0].Parameters[?ParameterKey=='$1'].ParameterValue | [0]" \
+              --output text
+          }
+          echo "SERVICE_A_IMAGE=$(get_param ServiceAImage)" >> $GITHUB_ENV
+          echo "SERVICE_B_IMAGE=$(get_param ServiceBImage)" >> $GITHUB_ENV
+          echo "SERVICE_C_IMAGE=$(get_param ServiceCImage)" >> $GITHUB_ENV
+          echo "SERVICE_D_IMAGE=$(get_param ServiceDImage)" >> $GITHUB_ENV
+
+      - name: Deploy CloudFormation (update FE image)
+        run: |
+          aws cloudformation deploy \
+            --stack-name "${STACK_NAME}" \
+            --template-file infra/all-in-one.yml \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides \
+              ServiceAImage="${SERVICE_A_IMAGE}" \
+              ServiceBImage="${SERVICE_B_IMAGE}" \
+              ServiceCImage="${SERVICE_C_IMAGE}" \
+              ServiceDImage="${SERVICE_D_IMAGE}" \
+              FrontendImage="${FE_IMAGE}"

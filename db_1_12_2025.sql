@@ -1,3 +1,4 @@
+-- CREATE EXTENSION IF NOT EXISTS pg_uuidv7;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- uuidv7 func
@@ -216,7 +217,6 @@ CREATE TABLE event (
     CONSTRAINT check_status CHECK (status IN ('DRAFT', 'PENDING', 'REJECTED', 'PUBLISHED', 'CANCELLED')),
     CONSTRAINT check_visibility CHECK (visibility IN ('PUBLIC', 'PRIVATE', 'UNLISTED')),
     CONSTRAINT check_participants CHECK (current_participants <= max_participants OR max_participants IS NULL)
-    -- Không tạo FK tới event_content ở đây để tránh lỗi vòng tham chiếu; thêm sau bằng ALTER TABLE
 );
 
 -- Event content versioning
@@ -241,7 +241,6 @@ CREATE TABLE event_content (
 	currency VARCHAR(3),
     CONSTRAINT fk_content_event FOREIGN KEY (event_uuid) REFERENCES event(uuid) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
     CONSTRAINT fk_previous_version FOREIGN KEY (previous_version_uuid) REFERENCES event_content(uuid) DEFERRABLE INITIALLY DEFERRED,
-    CONSTRAINT unique_event_version UNIQUE (event_uuid, version_number)
 );
 
 -- Thêm FK từ event.current_version_uuid → event_content.uuid sau khi cả 2 bảng đã tồn tại
@@ -282,7 +281,6 @@ CREATE INDEX IF NOT EXISTS event_published_public_idx
   ON event(published_at DESC)
   WHERE status = 'PUBLISHED' AND visibility = 'PUBLIC' AND deleted_at IS NULL;
 
-CREATE INDEX IF NOT EXISTS idx_event_page_uuid      ON event(page_uuid);
 CREATE INDEX IF NOT EXISTS idx_event_original_uuid  ON event(original_uuid);
 CREATE INDEX IF NOT EXISTS idx_event_created_by     ON event(created_by);
 CREATE INDEX IF NOT EXISTS idx_event_status_visibility ON event(status, visibility);
@@ -336,8 +334,6 @@ CREATE TABLE event_registration (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT check_registration_status CHECK (registration_status IN ('REGISTERED', 'CANCELLED', 'NO_SHOW', 'ATTENDED', 'REFUNDED')),
-    CONSTRAINT check_checkin_status CHECK (check_in_status IN ('NOT_CHECKED_IN', 'CHECKED_IN', 'CHECKED_OUT')),
-    CONSTRAINT check_waitlist_position CHECK (waitlist_position IS NULL OR waitlist_position > 0),
     CONSTRAINT check_ticket_price_non_negative CHECK (ticket_price IS NULL OR ticket_price >= 0),
     CONSTRAINT unique_registration UNIQUE(event_uuid, user_uuid)
 );

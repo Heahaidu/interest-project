@@ -7,6 +7,7 @@ import com.aws.services.AccountService;
 import com.aws.services.MailService;
 import com.aws.services.OTPService;
 import com.aws.utils.JwtUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,20 +22,14 @@ import java.util.Random;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1/user")
+@RequiredArgsConstructor
 public class ApiAccountController {
 
-    @Autowired
-    private AccountService accountService;
-
-    @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private OTPService otpService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final AccountService accountService;
+    private final MailService mailService;
+    private final OTPService otpService;
+    private final PasswordEncoder passwordEncoder;
 
 
     @PostMapping("/auth/login")
@@ -122,9 +117,11 @@ public class ApiAccountController {
     }
 
 
-    @PostMapping("/account/verify-email")
+    @PostMapping("/register/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam String email, @RequestParam String otp) {
         String cachedOtp = otpService.getOtp(email);
+
+        System.out.println("cachedOtp: " + cachedOtp);
 
         if (cachedOtp == null) {
             return ResponseEntity.status(404).body("OTP đã hết hạn");

@@ -5,6 +5,7 @@ import com.aws.pojo.Account;
 import com.aws.repositories.AccountRepository;
 import com.aws.services.AccountService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,13 +25,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service("userDetailsService")
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AccountRepository accountRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final AccountRepository accountRepository;
 
     @Transactional
     @Override
@@ -54,7 +53,6 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> account = this.accountRepository.findByEmail(email);
         return account.orElse(null);
     }
-
 
 
     @Override

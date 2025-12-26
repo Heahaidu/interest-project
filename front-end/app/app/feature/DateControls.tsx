@@ -1,3 +1,5 @@
+'use client'
+
 import { CalendarIcon, Sparkles } from "lucide-react";
 import { DateFilter } from "@/lib/types";
 import { Calendar } from "@/components/ui/calendar";

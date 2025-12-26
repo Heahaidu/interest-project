@@ -30,8 +30,8 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
   const loadUser = async () => {
     const token = getCookie("token");
     if (!token) {
-      // setUser(null);
-      setUser(INITIAL_USER)
+      setUser(null);
+      // setUser(INITIAL_USER)
       setLoading(false);
       return;
     }
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
       const res = await authApis().get("/secure/profile");
       // debug
       // console.log("AuthProvider.loadUser: profile response:", res?.data);
-      setUser(res.data || INITIAL_USER || null);
+      setUser(res.data || null);
     } catch (err) {
       setUser(null);
     } finally {

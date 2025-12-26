@@ -80,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({ onLogin, onRegister, onNavigate 
                                     {/* Actions */}
                                     <div className="flex items-center gap-4">
                                         {user ? (
-                                            <Account />
+                                            <Account onOpenSetting={() => {}} onNavigate={() => {}} />
                                         ) : (
                                             <>
                                                 <button

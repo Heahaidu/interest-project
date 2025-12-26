@@ -1,3 +1,5 @@
+'use client'
+
 import { ViewMode } from "@/lib/types"
 import { Grid, List } from "lucide-react";
 

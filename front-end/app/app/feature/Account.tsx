@@ -65,7 +65,7 @@ export default function Account({ onNavigate, onOpenSetting }: { onNavigate?: (l
 
                     {/* Menu Items */}
                     <div className="p-2 space-y-1">
-                        <button
+                        {/* <button
                             onClick={() => {
                                 setIsUserMenuOpen(false);
                                 if (onNavigate) {
@@ -82,7 +82,7 @@ export default function Account({ onNavigate, onOpenSetting }: { onNavigate?: (l
                         >
                             <UserIcon size={16} />
                             Profile
-                        </button>
+                        </button> */}
                         <button
                             onClick={() => { setIsUserMenuOpen(false); onOpenSetting(); }}
                             className="cursor-pointer w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"

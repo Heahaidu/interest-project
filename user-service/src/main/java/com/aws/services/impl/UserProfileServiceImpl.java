@@ -3,14 +3,19 @@ package com.aws.services.impl;
 import com.aws.pojo.UserProfile;
 import com.aws.repositories.UserProfileRepository;
 import com.aws.services.UserProfileService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
+@Slf4j
+@RequiredArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
 
-    @Autowired
     private UserProfileRepository userProfileRepository;
 
     @Override

@@ -8,6 +8,7 @@ import com.aws.pojo.UserProfile;
 import com.aws.services.AccountService;
 import com.aws.services.UserProfileService;
 import com.aws.utils.JwtUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +25,11 @@ import java.util.Map;
 import java.util.Random;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1/user")
+@RequiredArgsConstructor
 public class ApiUserController {
-    @Autowired
-    private UserProfileService userProfileService;
 
-    @Autowired
+    private UserProfileService userProfileService;
     private AccountService accountService;
 
     @PostMapping("/register/profile")
