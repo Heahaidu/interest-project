@@ -38,6 +38,8 @@ jobs:
 
       - name: Build (static export)
         working-directory: ${{ env.FRONTEND_DIR }}
+        env: 
+            API_BASE_URL: internsh-Alb-IwXOXN2bcdTI-1394514830.us-east-1.elb.amazonaws.com
         run: npm run build
 
       - name: Configure AWS credentials (OIDC)

@@ -21,7 +21,7 @@ const AiChatWidget: React.FC<AiChatWidgetProps> = ({ allEvents, onEventClick }) 
 
   // STOMP chat hook
   const { messages: wsMessages, sendMessage, isTyping: wsTyping } = useStompChat(
-    'http://localhost:8080/ws-chat/websocket',
+    (process.env.API_BASE_URL || 'localhost:8080') + '/ws-chat/websocket',
     '/topic/answer',
     '/app/query'
   );

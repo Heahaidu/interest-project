@@ -9,17 +9,15 @@ export type GetEventsResponse = {
 
 export const eventApi = {
     async list(): Promise<GetEventsResponse> {
-        const res = await apiClient.get<GetEventsResponse>('/events');
+        const res = await apiClient.get<GetEventsResponse>('/api/v1/events');
         return res.data;
     },
     async get(id: string): Promise<Event> {
-        const res = await apiClient.get<Event>(`/event/${id}`);
+        const res = await apiClient.get<Event>(`/api/v1/event/${id}`);
         return res.data;
     },
     create(data: FormData) {
-        return apiClient.post("/event/create", data, 
-            {headers: { 'X-User-UUID' : '11111111-1111-1111-1111-111111111111'}}
-        )
+        return apiClient.post("/api/v1/event/create", data)
     },
     update(id: string, data: FormData) {
         return apiClient.put(`/events/${id}`, data, {
@@ -29,35 +27,35 @@ export const eventApi = {
         })
     },
     async edit(event: Event) {
-        const res = await apiClient.post('/event/edit', event);
+        const res = await apiClient.post('/api/v1/event/edit', event);
         return res.data;
     },
     async register(id: string) {
-        const res = await apiClient.get<Event>(`/event/register/${id}`)
+        const res = await apiClient.get<Event>(`/api/v1/event/register/${id}`)
         return res.data
     },
     async unregister(id: string) {
-        const res = await apiClient.get<Event>(`/event/unregister/${id}`)
+        const res = await apiClient.get<Event>(`/api/v1/event/unregister/${id}`)
         return res.data
     },
     async interest(id: string) {
-        const res = await apiClient.get<Event>(`/event/interest/${id}`)
+        const res = await apiClient.get<Event>(`/api/v1/event/interest/${id}`)
         return res.data
     },
     async uninterest(id: string) {
-        const res = await apiClient.get<Event>(`/event/uninterest/${id}`)
+        const res = await apiClient.get<Event>(`/api/v1/event/uninterest/${id}`)
         return res.data
     },
     async rating(id: string, data: Review) {
-        const res = await apiClient.post(`/event/rating/${id}`, data)
+        const res = await apiClient.post(`/api/v1/event/rating/${id}`, data)
         return res.data
     },
     async delete(id: string) {
-        const res = await apiClient.get(`/event/delete/${id}`)
+        const res = await apiClient.get(`/api/v1/event/delete/${id}`)
         return res.data
     },
     async hide(id: string) {
-        const res = await apiClient.get(`/event/hide/${id}`)
+        const res = await apiClient.get(`/api/v1/event/hide/${id}`)
         return res.data
     },
 }

@@ -1,15 +1,15 @@
 import axios from "axios";
 import { getCookie, setCookie, deleteCookie } from "cookies-next";
 
-const BASE_URL = "http://localhost:8080/api/";
+const BASE_URL = process.env.API_BASE_URL ||  "http://localhost:8080";
 
 export const endpoints = {
   // Auth
-  "register": "register/account",
-  "login": "auth/login",
-  "verify-email": "register/verify-email",
-  "profile": "secure/profile",
-  "profile-update": "register/profile",
+  "register": "/api/v1/user/register/account",
+  "login": "/api/v1/user/auth/login",
+  "verify-email": "/api/v1/user/register/verify-email",
+  "profile": "/api/v1/user/secure/profile",
+  "profile-update": "/api/v1/user/register/profile",
 
   // Page
   "page-update": "page-update",
