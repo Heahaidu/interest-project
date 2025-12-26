@@ -15,7 +15,7 @@ env:
   AWS_REGION: us-east-1
   PROJECT_NAME: interest-projcet
   ECS_CLUSTER: interest-projcet-cluster
-  ECS_SERVICE: interest-projcet-svc-chatbot-service
+  ECS_SERVICE: interest-projcet-svc-chatbot
   ECR_REPOSITORY: interest-chatbot-service
   CONTAINER_NAME: app
 

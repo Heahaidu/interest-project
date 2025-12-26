@@ -15,7 +15,7 @@ env:
   AWS_REGION: us-east-1
   PROJECT_NAME: interest-projcet
   ECS_CLUSTER: interest-projcet-cluster
-  ECS_SERVICE: interest-projcet-svc-event-service
+  ECS_SERVICE: interest-projcet-svc-event
   ECR_REPOSITORY: interest-event-service
   CONTAINER_NAME: app
 
