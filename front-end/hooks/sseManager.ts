@@ -14,7 +14,7 @@ class NotificationSSE {
     this.controller = new AbortController();
     this.connected = true;
 
-    fetchEventSource('http://localhost:8081/api/v1/notifications/stream', {
+    fetchEventSource(`http://${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/notifications/stream`, {
       signal: this.controller.signal,
       headers,
 

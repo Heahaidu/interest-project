@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getCookie, setCookie, deleteCookie } from "cookies-next";
 
-const BASE_URL = process.env.API_BASE_URL ||  "http://localhost:8080";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||  "http://localhost:8080";
 
 export const endpoints = {
   // Auth
