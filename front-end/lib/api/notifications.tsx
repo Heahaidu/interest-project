@@ -20,7 +20,6 @@ export const notificationsApi = {
     ): Promise<ListNotificationRough> {
         const res = await apiClient.get<ListNotificationRough>(
             "/api/v1/notifications",
-            {headers: { 'X-User-UUID' : '11111111-1111-1111-1111-111111111111'}}
         );
         return res.data;
     },
@@ -28,7 +27,6 @@ export const notificationsApi = {
     async markAsRead(id: string) {
         const res = await apiClient.get(
             `/api/v1/notifications/${id}/read`,
-            {headers: { 'X-User-UUID' : '11111111-1111-1111-1111-111111111111'}}
         );
         return res.data;
     },
@@ -36,7 +34,6 @@ export const notificationsApi = {
     markAllAsRead: async () => {
         const res = await apiClient.get(
             "/api/v1/notifications/read-all",
-            {headers: { 'X-User-UUID' : '11111111-1111-1111-1111-111111111111'}}
         );
         return res.data;
     },

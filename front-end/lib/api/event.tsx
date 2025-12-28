@@ -27,35 +27,35 @@ export const eventApi = {
         })
     },
     async edit(event: Event) {
-        const res = await apiClient.post('/api/v1/event/edit', event);
+        const res = await apiClient.post('/api/v1/events/edit', event);
         return res.data;
     },
     async register(id: string) {
-        const res = await apiClient.get<Event>(`/api/v1/event/register/${id}`)
+        const res = await apiClient.get<Event>(`/api/v1/events/register/${id}`)
         return res.data
     },
     async unregister(id: string) {
-        const res = await apiClient.get<Event>(`/api/v1/event/unregister/${id}`)
+        const res = await apiClient.get<Event>(`/api/v1/events/unregister/${id}`)
         return res.data
     },
     async interest(id: string) {
-        const res = await apiClient.get<Event>(`/api/v1/event/interest/${id}`)
+        const res = await apiClient.get<Event>(`/api/v1/events/interest/${id}`)
         return res.data
     },
     async uninterest(id: string) {
-        const res = await apiClient.get<Event>(`/api/v1/event/uninterest/${id}`)
+        const res = await apiClient.get<Event>(`/api/v1/events/uninterest/${id}`)
         return res.data
     },
     async rating(id: string, data: Review) {
-        const res = await apiClient.post(`/api/v1/event/rating/${id}`, data)
+        const res = await apiClient.post(`/api/v1/events/rating/${id}`, data)
         return res.data
     },
     async delete(id: string) {
-        const res = await apiClient.get(`/api/v1/event/delete/${id}`)
+        const res = await apiClient.get(`/api/v1/events/delete/${id}`)
         return res.data
     },
     async hide(id: string) {
-        const res = await apiClient.get(`/api/v1/event/hide/${id}`)
+        const res = await apiClient.get(`/api/v1/events/hide/${id}`)
         return res.data
     },
 }
