@@ -9,7 +9,6 @@ import java.util.UUID;
 @Data
 public class UserProfileResponseDTO {
     private UUID uuid;
-    private String name;
     private String email;
     private String avatarUrl;
     private String bio;

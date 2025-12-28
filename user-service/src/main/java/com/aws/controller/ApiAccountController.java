@@ -76,14 +76,13 @@ public class ApiAccountController {
 
         String token;
         try {
-            token = JwtUtils.generateToken(dto.getEmail());
+            token = JwtUtils.generateToken(account.getEmail(), account.getUuid());
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Could not create JWT");
         }
 
-        // cập nhật last login time sau khi authenticate thành công
         account.setLastLoginAt(LocalDateTime.now());
         accountService.addOrUpdateAccount(account);
 
@@ -96,7 +95,6 @@ public class ApiAccountController {
     @CrossOrigin
     public ResponseEntity<?> getProfile(Principal principal) {
         Account account = accountService.getAccountByEmail(principal.getName());
-
         UserProfile userProfile = userProfileService.findUserProfileById(account.getUuid());
 
         UserProfileResponseDTO response = new UserProfileResponseDTO();
