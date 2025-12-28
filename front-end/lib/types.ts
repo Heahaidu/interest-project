@@ -179,3 +179,14 @@ export interface Review {
   timestamp: string;
   replies: ReviewReply[];
 }
+
+export interface UserRegisterFormData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+export const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

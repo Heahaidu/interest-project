@@ -8,7 +8,7 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, className = '', size = 'md' }) => {
+export default function Modal({ isOpen, onClose, children, className = '', size = 'md' }:ModalProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, classNa
       setIsVisible(true);
       document.body.style.overflow = 'hidden';
     } else {
-      const timer = setTimeout(() => setIsVisible(false), 300); // Wait for animation
+      const timer = setTimeout(() => setIsVisible(false), 300); 
       document.body.style.overflow = 'unset';
       return () => clearTimeout(timer);
     }

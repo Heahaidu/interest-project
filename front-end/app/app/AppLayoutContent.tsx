@@ -2,9 +2,8 @@
 
 import { useContext, useEffect, useState } from "react";
 import Header from "@/components/common/Header";
-import { Modal } from "@/components/common/Modal";
-import Login from "@/components/common/Login";
-import Register from "@/components/common/Register";
+import Modal from "@/components/common/Modal";
+import AuthModal from "@/components/common/AuthModal";
 import Sidebar from "@/app/app/Sidebar";
 import { AppPage, Event as EventType } from "@/lib/types";
 import Footer from "./Footer";
@@ -17,21 +16,26 @@ import EventEditorDialog from "@/components/dialogs/EventEditorDialog";
 import { AuthContext } from "@/context/AuthContext";
 import { useSearchParams } from "next/navigation";
 
-export default function AppLayoutContent({ children }: { children: React.ReactNode }) {
+export default function AppLayoutContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user } = useContext(AuthContext);
   const params = useSearchParams();
-  const eventUuid = params.get('e');
+  const eventUuid = params.get("e");
 
   const [currentTitle, setCurrentTitle] = useState("Discover");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [events, setEvents] = useState<EventType[]>([]);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEvent, setEditorEvent] = useState<EventType | null>(null);
   const [currentPage, setCurrentPage] = useState<AppPage>("Discover");
-  const [showSignInModal, setShowSignInModal] = useState(false);
+
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
 
   const openCreateDialog = () => {
     setEditorEvent(null);
@@ -97,7 +101,20 @@ export default function AppLayoutContent({ children }: { children: React.ReactNo
   const handleOpenSetting = () => {
     if (user) {
       setIsSettingsOpen(true);
-    } else setShowSignInModal(true);
+    } else {
+      setAuthMode("login");
+      setShowAuthModal(true);
+    }
+  };
+
+  const handleLogin = () => {
+    setAuthMode("login");
+    setShowAuthModal(true);
+  };
+
+  const handleRegister = () => {
+    setAuthMode("register");
+    setShowAuthModal(true);
   };
 
   useEffect(() => {
@@ -110,7 +127,8 @@ export default function AppLayoutContent({ children }: { children: React.ReactNo
   }
 
   return (
-    <div className="flex min-h-screen bg-white dark:bg-[#050505] transition-all duration-200">
+    <div className="flex min-h-screen bg-zinc-50 dark:bg-[#050505] transition-colors duration-200">
+      {/* Sidebar - Desktop */}
       <Sidebar
         active={currentPage}
         onNavChange={(label) => {
@@ -123,6 +141,15 @@ export default function AppLayoutContent({ children }: { children: React.ReactNo
         onOpenSettings={handleOpenSetting}
       />
 
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-in fade-in duration-200"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(true)}
         className="lg:hidden fixed bottom-6 right-6 z-50 bg-black dark:bg-white text-white dark:text-black p-4 rounded-full shadow-2xl hover:scale-110 transition-transform"
@@ -130,36 +157,46 @@ export default function AppLayoutContent({ children }: { children: React.ReactNo
         <Menu />
       </button>
 
-      <div className="flex-1 flex flex-col lg:ml-56 min-h-screen dark:!bg-[#0a0a0a]">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col lg:ml-64 min-h-screen">
+        {/* Header */}
         <Header
           title={currentTitle}
           onNavigate={(label: string) => setCurrentTitle(label)}
-          onOpenSetting={() => setIsSettingsOpen(true)}
-          onLogin={() => setShowSignInModal(true)}
-          onRegister={() => setShowSignUpModal(true)}
+          onOpenSetting={handleOpenSetting}
+          onLogin={handleLogin}
+          onRegister={handleRegister}
         />
 
-        <main className="flex-1 animate-in fade-in duration-300 slide-in-from-bottom-2">
-          {children}
+        {/* Main Content with proper spacing */}
+        <main className="flex-1 w-full animate-in fade-in duration-300 slide-in-from-bottom-2">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+            {children}
+          </div>
         </main>
+
+        {/* Footer - Sticky bottom */}
         <Footer />
       </div>
 
-      <Modal isOpen={showSignInModal} onClose={() => setShowSignInModal(false)}>
-        <Login onSuccess={() => setShowSignInModal(false)} />
+      {/* Auth Modal - Combined Login/Register */}
+      <Modal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)}>
+        <AuthModal
+          initialMode={authMode}
+          onSuccess={() => setShowAuthModal(false)}
+        />
       </Modal>
 
-      <Modal isOpen={showSignUpModal} onClose={() => setShowSignUpModal(false)}>
-        <Register onSuccess={() => setShowSignUpModal(false)} />
-      </Modal>
-
+      {/* Settings Dialog */}
       <SettingsDialog
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
       />
 
+      {/* AI Chat Widget */}
       <AiChatWidget allEvents={events} onEventClick={setSelectedEvent} />
 
+      {/* Event Detail Dialog */}
       <EventDetailDialog
         eventUuid={eventUuid}
         currentUser={user}
@@ -168,12 +205,10 @@ export default function AppLayoutContent({ children }: { children: React.ReactNo
         onDelete={handleDeleteEvent}
         onRegisterEvent={handleRegisterEvent}
         onUnregisterEvent={handleUnregisterEvent}
-        onLogin={() => {
-          setSelectedEvent(null);
-          setShowSignInModal(true);
-        }}
+        onLogin={handleLogin}
       />
 
+      {/* Event Editor Dialog */}
       <EventEditorDialog
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}

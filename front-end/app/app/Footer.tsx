@@ -2,9 +2,12 @@
 
 import { useTheme } from "@/context/ThemeContext";
 import { Theme } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 export default function Footer() {
     const { theme, setTheme} = useTheme();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
     return (
         <footer className="border-t border-gray-200 dark:border-white/5 py-6 mt-auto transition-colors duration-300 transition-all">
             <div className="flex flex-col lg:flex-row justify-between items-center gap-4 px-6">
@@ -14,7 +17,7 @@ export default function Footer() {
                     <span className="hidden lg:inline">Designed by Heahaidu</span>
                 </div>
 
-                <div className="flex items-center gap-3">
+                {mounted && <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-500">Theme</span>
                     <div className="toggle">
                         <button
@@ -39,7 +42,7 @@ export default function Footer() {
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="12" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
                         </button>
                     </div>
-                </div>
+                </div>}
             </div>
         </footer>
     )

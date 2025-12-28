@@ -2,10 +2,9 @@
 
 import React, { createContext, useEffect, useState } from "react";
 import { setCookie, deleteCookie, getCookie } from "cookies-next";
-import api, { authApis, endpoints } from "@/lib/APIs";
 import { Toaster } from 'sonner';
 import { UserProfile } from "@/lib/types";
-import { INITIAL_USER } from "@/lib/services/mockData";
+import { authApi } from "@/lib/api/auth";
 
 type AuthContextValue = {
   user: UserProfile | null;
@@ -31,13 +30,12 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
     const token = getCookie("token");
     if (!token) {
       setUser(null);
-      // setUser(INITIAL_USER)
       setLoading(false);
       return;
     }
 
     try {
-      const res = await authApis().get(endpoints.profile);
+      const res = await authApi.getProfile()
       // debug
       // console.log("AuthProvider.loadUser: profile response:", res?.data);
       setUser(res.data || null);
@@ -57,10 +55,8 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
   };
 
   const signIn = async (email: string, password: string) => {
-    const res = await api.post(endpoints.login, {
-      email: email,
-      password: password,
-    });
+
+    const res = await authApi.login(email, password);
 
     const token = res.data?.token;
     if (!token) throw new Error("No token returned from login");

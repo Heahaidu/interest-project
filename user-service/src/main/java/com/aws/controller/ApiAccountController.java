@@ -25,7 +25,7 @@ import java.util.Random;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/user/auth")
 @RequiredArgsConstructor
 public class ApiAccountController {
 
@@ -37,7 +37,7 @@ public class ApiAccountController {
     private final ImageStorageService imageStorageService;
 
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AccountDTO dto) {
         if (dto.getEmail() == null || dto.getPassword() == null) {
             return ResponseEntity
@@ -120,7 +120,7 @@ public class ApiAccountController {
     }
 
 
-    @PostMapping("/register/account")
+    @PostMapping("/register")
     public ResponseEntity<?> userRegisterAccount(@RequestBody AccountDTO a) {
         try {
             Account account = new Account();
@@ -149,7 +149,7 @@ public class ApiAccountController {
     }
 
 
-    @PostMapping("/register/verify-email")
+    @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam String email, @RequestParam String otp) {
         String cachedOtp = otpService.getOtp(email);
 
