@@ -56,7 +56,7 @@ export default function Hero({ onSearch, isGenerating = false }: HeroProps) {
         </div>
 
         {/* AI Search Input */}
-        <form onSubmit={handleSearch} className="relative w-full max-w-lg group">
+        {/* <form onSubmit={handleSearch} className="relative w-full max-w-lg group">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             {isGenerating ? (
               <Loader2 className="animate-spin text-purple-500" size={20} />
@@ -74,7 +74,7 @@ export default function Hero({ onSearch, isGenerating = false }: HeroProps) {
           <div className="absolute inset-y-0 right-2 flex items-center">
              <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-black/20 px-2 py-1 rounded border border-gray-200 dark:border-white/5">AI Powered</span>
           </div>
-        </form>
+        </form> */}
       </div>
     </section>
   );
