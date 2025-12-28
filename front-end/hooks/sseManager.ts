@@ -1,4 +1,5 @@
 // sse/notificationSSE.ts
+import { API_BASE_URL } from '@/lib/api/clients';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 class NotificationSSE {
@@ -14,7 +15,7 @@ class NotificationSSE {
     this.controller = new AbortController();
     this.connected = true;
 
-    fetchEventSource(`http://${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/notifications/stream`, {
+    fetchEventSource(`http://${API_BASE_URL}/api/v1/notifications/stream`, {
       signal: this.controller.signal,
       headers,
 

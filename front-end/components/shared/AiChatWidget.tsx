@@ -20,11 +20,7 @@ const AiChatWidget: React.FC<AiChatWidgetProps> = ({ allEvents, onEventClick }) 
   };
 
   // STOMP chat hook
-  const { messages: wsMessages, sendMessage, isTyping: wsTyping } = useStompChat(
-    (process.env.NEXT_PUBLIC_API_BASE_URL || 'localhost:8080') + '/ws-chat/websocket',
-    '/topic/answer',
-    '/app/query'
-  );
+  const { messages: wsMessages, sendMessage, isTyping: wsTyping } = useStompChat();
 
   useEffect(() => {
     if (isOpen) scrollToBottom();

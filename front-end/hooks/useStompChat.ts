@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
+import { API_BASE_URL } from '@/lib/api/clients';
 
 export interface ChatMessageWS {
   id: string;
@@ -9,7 +10,12 @@ export interface ChatMessageWS {
   timestamp: Date;
 }
 
-export const useStompChat = (url: string, topic: string, appDestination: string) => {
+export const useStompChat = () => {
+
+  const url = `${API_BASE_URL}/ws-chat/websocket`;
+  const topic = '/topic/answer';
+  const appDestination = '/app/query';
+
   const [messages, setMessages] = useState<ChatMessageWS[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isTyping, setIsTyping] = useState(false);

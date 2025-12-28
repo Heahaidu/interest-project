@@ -2,7 +2,7 @@
 
 import React, { createContext, useEffect, useState } from "react";
 import { setCookie, deleteCookie, getCookie } from "cookies-next";
-import api, { authApis } from "@/lib/APIs";
+import api, { authApis, endpoints } from "@/lib/APIs";
 import { Toaster } from 'sonner';
 import { UserProfile } from "@/lib/types";
 import { INITIAL_USER } from "@/lib/services/mockData";
@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
     }
 
     try {
-      const res = await authApis().get("/secure/profile");
+      const res = await authApis().get(endpoints.profile);
       // debug
       // console.log("AuthProvider.loadUser: profile response:", res?.data);
       setUser(res.data || null);
@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
   };
 
   const signIn = async (email: string, password: string) => {
-    const res = await api.post("/auth/login", {
+    const res = await api.post(endpoints.login, {
       email: email,
       password: password,
     });

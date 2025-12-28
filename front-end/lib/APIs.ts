@@ -3,6 +3,8 @@ import { getCookie, setCookie, deleteCookie } from "cookies-next";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||  "http://localhost:8080";
 
+console.log(BASE_URL)
+
 export const endpoints = {
   // Auth
   "register": "/api/v1/user/register/account",
