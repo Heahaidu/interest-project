@@ -16,7 +16,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
 
-    private UserProfileRepository userProfileRepository;
+
+    private final UserProfileRepository userProfileRepository;
 
     @Override
     public UserProfile addOrUpdateUserProfile(UserProfile userProfile) {

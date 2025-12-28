@@ -2,20 +2,23 @@ package com.aws.controller;
 
 
 import com.aws.dto.AccountDTO;
+import com.aws.dto.UserProfileDTO;
+import com.aws.dto.UserProfileResponseDTO;
 import com.aws.pojo.Account;
-import com.aws.services.AccountService;
-import com.aws.services.MailService;
-import com.aws.services.OTPService;
+import com.aws.pojo.UserProfile;
+import com.aws.services.*;
 import com.aws.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
@@ -30,6 +33,8 @@ public class ApiAccountController {
     private final MailService mailService;
     private final OTPService otpService;
     private final PasswordEncoder passwordEncoder;
+    private final UserProfileService userProfileService;
+    private final ImageStorageService imageStorageService;
 
 
     @PostMapping("/auth/login")
@@ -71,14 +76,13 @@ public class ApiAccountController {
 
         String token;
         try {
-            token = JwtUtils.generateToken(dto.getEmail());
+            token = JwtUtils.generateToken(account.getEmail(), account.getUuid());
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Could not create JWT");
         }
 
-        // cập nhật last login time sau khi authenticate thành công
         account.setLastLoginAt(LocalDateTime.now());
         accountService.addOrUpdateAccount(account);
 
@@ -89,8 +93,30 @@ public class ApiAccountController {
     @RequestMapping("/secure/profile")
     @ResponseBody
     @CrossOrigin
-    public ResponseEntity<Account> getProfile(Principal principal) {
-        return new ResponseEntity<>(this.accountService.getAccountByEmail(principal.getName()), HttpStatus.OK);
+    public ResponseEntity<?> getProfile(Principal principal) {
+        Account account = accountService.getAccountByEmail(principal.getName());
+        UserProfile userProfile = userProfileService.findUserProfileById(account.getUuid());
+
+        UserProfileResponseDTO response = new UserProfileResponseDTO();
+
+        response.setUuid(account.getUuid());
+        response.setEmail(account.getEmail());
+        response.setAvatarUrl(userProfile.getAvatarUrl());
+        response.setBio(userProfile.getBio());
+        response.setFirstName(userProfile.getFirstName());
+        response.setLastName(userProfile.getLastName());
+        response.setFullName(userProfile.getFullName());
+        response.setDateOfBirth(userProfile.getDateOfBirth());
+        response.setCity(userProfile.getCity());
+        response.setCountryCode(userProfile.getCountryCode());
+        response.setInterests(userProfile.getInterests());
+        response.setSocialLinks(userProfile.getSocialLinks());
+        response.setPreferences(userProfile.getPreferences());
+        response.setPrivacySettings(userProfile.getPrivacySettings());
+        response.setCreatedAt(userProfile.getCreatedAt());
+        response.setUpdatedAt(userProfile.getUpdatedAt());
+
+        return ResponseEntity.ok(response);
     }
 
 
@@ -103,6 +129,12 @@ public class ApiAccountController {
             account.setEmail(a.getEmail());
 
             Account accountSaved = this.accountService.addOrUpdateAccount(account);
+
+            UserProfile userProfile = new UserProfile();
+            userProfile.setAccountUuid(accountSaved.getUuid());
+            userProfile.setFirstName(a.getFirstName());
+            userProfile.setLastName(a.getLastName());
+            this.userProfileService.addOrUpdateUserProfile(userProfile);
 
             String otp = String.valueOf(new Random().nextInt(900000) + 100000);
             otpService.saveOtp(a.getEmail(), otp);
@@ -143,7 +175,7 @@ public class ApiAccountController {
         ));
     }
 
-    @PostMapping("/account/forgot-password")
+    @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
 
         Account account = this.accountService.getAccountByEmail(email);
@@ -160,7 +192,7 @@ public class ApiAccountController {
         return ResponseEntity.ok("OTP đã gửi qua email");
     }
 
-    @PostMapping("/account/verify-forgot-password")
+    @PostMapping("/verify-forgot-password")
     public ResponseEntity<?> verifyOtp(@RequestParam String email, @RequestParam String otp) {
         String cachedOtp = otpService.getOtp(email);
 
@@ -181,7 +213,7 @@ public class ApiAccountController {
         ));
     }
 
-    @PatchMapping("/user/reset-password")
+    @PatchMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String resetToken, @RequestParam String password) {
         String email = otpService.getEmailByResetToken(resetToken);
 
@@ -198,7 +230,7 @@ public class ApiAccountController {
         return ResponseEntity.ok("Đổi mật khẩu thành công");
     }
 
-    @PostMapping("/user/change-password")
+    @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody Map<String, String> payload,
             Principal principal) {
@@ -226,6 +258,53 @@ public class ApiAccountController {
             return ResponseEntity.ok("Đổi mật khẩu thành công");
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @PatchMapping("/update-info")
+    public ResponseEntity<?> updateInformation(
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar,
+            @RequestPart("data") UserProfileDTO dto,
+            Principal principal) {
+
+        try {
+            String email = principal.getName();
+            Account account = accountService.getAccountByEmail(email);
+            if (account == null) {
+                return ResponseEntity.status(404).body("Không tìm thấy user");
+            }
+
+            UserProfile userProfile = this.userProfileService.findUserProfileById(account.getUuid());
+
+
+            if (dto.getBio() != null) {
+                userProfile.setBio(dto.getBio());
+            }
+            if (dto.getFirstName() != null) userProfile.setFirstName(dto.getFirstName());
+            if (dto.getLastName() != null) userProfile.setLastName(dto.getLastName());
+            if (dto.getCity() != null) userProfile.setCity(dto.getCity());
+
+            if (dto.getDateOfBirth() != null && !dto.getDateOfBirth().trim().isEmpty()) {
+                try {
+                    LocalDate parsedDate = LocalDate.parse(dto.getDateOfBirth().trim()); // format yyyy-MM-dd
+                    userProfile.setDateOfBirth(parsedDate);
+                } catch (DateTimeParseException e) {
+                    return ResponseEntity.badRequest().body("Định dạng ngày sinh không hợp lệ. Vui lòng dùng định dạng YYYY-MM-DD (ví dụ: 1995-12-25)");
+                }
+            }
+
+            if (avatar != null && !avatar.isEmpty()) {
+                String avatarUrl = imageStorageService.upload(avatar);
+                userProfile.setAvatarUrl(avatarUrl);
+            }
+
+            this.userProfileService.addOrUpdateUserProfile(userProfile);
+
+            return ResponseEntity.ok("Cập nhật thành công");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Lỗi server: " + e.getMessage());
         }
     }
 }
