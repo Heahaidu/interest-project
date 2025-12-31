@@ -5,6 +5,9 @@ import { User, Bell, Shield, X, Monitor, Sun, Moon, Globe, Clock, ChevronRight, 
 import { Theme, UserProfile } from '@/lib/types';
 import { AuthContext } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import { authApi } from '@/lib/api/auth';
+import ChangePasswordDialog from './ChangePasswordDialog';
+import { toast } from 'sonner';
 
 interface SettingsDialogProps {
   isOpen: boolean;
@@ -12,8 +15,13 @@ interface SettingsDialogProps {
 }
 
 const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
-  const { user } = useContext(AuthContext)
+  const { user, reloadUser, signOut } = useContext(AuthContext)
   const [activeTab, setActiveTab] = useState('My account');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const emptyProfile: UserProfile = {
     uuid: '',
@@ -23,7 +31,12 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
     avatarUrl: '',
     city: '',
     country: '',
-    timezone: ''
+    timezone: '',
+    // profile fields
+    firstName: '',
+    lastName: '',
+    bio: '',
+    dateOfBirth: ''
   }
 
   // Password state
@@ -41,6 +54,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (user) {
       setFormData(user);
+      setAvatarFile(null);
       setIsDirty(false);
     }
   }, [user, isOpen]);
@@ -65,9 +79,20 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
   console.log(user)
   console.log(formData)
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    // setFormData({ ...formData, [e.target.name]: e.target.value });
-    // setIsDirty(true);
+  const getInitials = () => {
+    const first = (formData.firstName || '').trim();
+    const last = (formData.lastName || '').trim();
+    if (first || last) {
+      return `${(first[0] || '')}${(last[0] || '')}`.toUpperCase();
+    }
+    return (formData.name || '').substring(0, 2).toUpperCase();
+  };
+
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setIsDirty(true);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,26 +104,64 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
       return;
     }
 
-    const fileType = file.type.startsWith('video') ? 'video' : 'image';
     const url = URL.createObjectURL(file);
-    // setMediaPreview(url);
-    setFormData(prev => ({ ...prev, imageUrl: url, imageType: fileType }));
+    setAvatarFile(file);
+    // store preview in avatarUrl so UI shows preview
+    setFormData(prev => ({ ...prev, avatarUrl: url }));
+    setIsDirty(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Construct location string from city/country
     const locationStr = `${formData.city || ''}${formData.city && formData.country ? ', ' : ''}${formData.country || ''}`;
-    const updatedUser = { ...formData, location: locationStr };
-    // onSaveUser(updatedUser);
-    setIsDirty(false);
-    // Optional: Show a toast here
+    const displayName = [formData.firstName, formData.lastName].filter(Boolean).join(' ').trim();
+    const updatedUser = { ...formData, location: locationStr, name: displayName || formData.name, privacySettings };
+
+    setIsSaving(true);
+    try {
+      await authApi.updateInformation(updatedUser, avatarFile || undefined);
+      // refresh user from server
+      await reloadUser();
+      setIsDirty(false);
+      toast.success('Profile updated');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to update profile.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Open confirm modal (do not immediately delete)
+  const handleDeleteAccount = () => {
+    setShowDeleteModal(true);
+  };
+
+  // Perform deletion after user confirms in modal
+  const performDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await authApi.deleteAccount();
+      toast.success('Account deleted successfully.');
+      // Sign out and close dialogs
+      signOut();
+      setShowDeleteModal(false);
+      onClose();
+    } catch (err: any) {
+      console.error(err);
+      const resp = err?.response?.data;
+      const msg = typeof resp === 'string' ? resp : (resp?.message || 'Failed to delete account.');
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
-  };
+  }; 
 
   const countries = ['USA', 'United Kingdom', 'Canada', 'Germany', 'France', 'Japan', 'Vietnam', 'Australia', 'Other'];
   const timezones = [
@@ -199,13 +262,18 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center gap-6 pb-6 border-b border-gray-100 dark:border-[#2f2f2f]">
                   <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                     <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden border border-gray-200 dark:border-white/10">
-                      {formData.avatarUrl.length > 2 ? (
-                        <img src={formData.avatarUrl} className="w-full h-full object-cover" />
+                      {formData.avatarUrl ? (
+                        <img
+                          src={formData.avatarUrl}
+                          className="w-full h-full object-cover"
+                          alt="avatar"
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-3xl font-medium text-gray-400">
-                          {formData.name.substring(0, 2)}
+                          {getInitials()}
                         </div>
-                      )}
+                      )} 
+
                     </div>
                     <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium">
                       Change
@@ -233,16 +301,30 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Personal Information</h3>
 
                   <div className="grid grid-cols-1 gap-6">
-                    <div className="space-y-1.5">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Preferred name</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 bg-transparent border border-gray-300 dark:border-[#3f3f3f] rounded-md text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all dark:text-white"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-1.5">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">First name</label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          value={formData.firstName || ''}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 bg-transparent border border-gray-300 dark:border-[#3f3f3f] rounded-md text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all dark:text-white"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Last name</label>
+                        <input
+                          type="text"
+                          name="lastName"
+                          value={formData.lastName || ''}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 bg-transparent border border-gray-300 dark:border-[#3f3f3f] rounded-md text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all dark:text-white"
+                        />
+                      </div>
                     </div>
+
                     <div className="space-y-1.5">
                       <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">Username</label>
                       <div className="relative">
@@ -256,6 +338,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                         <AtSign size={15} className="absolute left-3 top-2.5 text-gray-400 pointer-events-none" />
                       </div>
                     </div>
+
                     <div className="space-y-1.5">
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                       <div className="relative">
@@ -269,6 +352,28 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                         <Mail size={16} className="absolute left-3 top-2.5 text-gray-400 pointer-events-none" />
                       </div>
                     </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bio</label>
+                      <textarea
+                        name="bio"
+                        value={formData.bio || ''}
+                        onChange={handleInputChange}
+                        rows={3}
+                        className="w-full px-3 py-2 bg-transparent border border-gray-300 dark:border-[#3f3f3f] rounded-md text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all dark:text-white"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of birth</label>
+                      <input
+                        type="date"
+                        name="dateOfBirth"
+                        value={formData.dateOfBirth ? formData.dateOfBirth.slice(0, 10) : ''}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 bg-transparent border border-gray-300 dark:border-[#3f3f3f] rounded-md text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all dark:text-white"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -281,7 +386,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                       <div className="text-sm text-gray-500 dark:text-gray-400">Set a permanent password to login to your account.</div>
                     </div>
                     <button
-                      onClick={() => alert("Password change flow would open here")}
+                      onClick={() => setShowChangePasswordDialog(true)}
                       className="text-sm border border-gray-300 dark:border-[#3f3f3f] px-3 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-gray-700 dark:text-gray-200"
                     >
                       Change password
@@ -297,8 +402,12 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
                       <div className="text-sm font-medium text-gray-900 dark:text-white">Delete account</div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">Permanently remove your account and all of its contents.</div>
                     </div>
-                    <button className="text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 px-3 py-1.5 rounded transition-colors flex items-center gap-2">
-                      <Trash2 size={14} /> Delete account
+                    <button
+                      onClick={handleDeleteAccount}
+                      disabled={isDeleting}
+                      className={`text-sm px-3 py-1.5 rounded transition-colors flex items-center gap-2 ${isDeleting ? 'bg-red-300 text-white cursor-not-allowed' : 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10'}`}
+                    >
+                      <Trash2 size={14} /> {isDeleting ? 'Deleting...' : 'Delete account'}
                     </button>
                   </div>
                 </div>
@@ -444,17 +553,38 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose }) => {
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/80 dark:bg-white/10 backdrop-blur-md text-white dark:text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-4 animate-in slide-in-from-bottom-5 duration-200 z-10">
               <span className="text-sm font-medium">Unsaved changes</span>
               <div className="h-4 w-[1px] bg-white/20"></div>
-              <button onClick={() => { setFormData(user); setIsDirty(false); }} className="text-xs hover:underline opacity-80 hover:opacity-100">Reset</button>
+              <button onClick={() => { setAvatarFile(null); setFormData(user); setPrivacySettings(user?.privacySettings ?? { isPrivate: false, showActivity: true }); setIsDirty(false); }} className="text-xs hover:underline opacity-80 hover:opacity-100">Reset</button>
               <button
                 onClick={handleSave}
-                className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full transition-colors"
+                disabled={isSaving}
+                className={`text-xs font-bold px-3 py-1.5 rounded-full transition-colors ${isSaving ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
               >
-                Update
+                {isSaving ? 'Updating...' : 'Update'}
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Change Password Dialog */}
+      <ChangePasswordDialog isOpen={showChangePasswordDialog} onClose={() => setShowChangePasswordDialog(false)} />
+
+      {/* Delete confirmation modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowDeleteModal(false)} />
+          <div className="relative w-full max-w-sm bg-white dark:bg-[#191919] rounded-xl shadow-2xl p-6 z-10">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">Confirm account deletion</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Bạn có chắc muốn xóa tài khoản? Hành động này sẽ xóa toàn bộ dữ liệu và không thể hoàn tác.</p>
+            <div className="flex items-center justify-end gap-2">
+              <button onClick={() => setShowDeleteModal(false)} className="px-3 py-1.5 rounded-md text-sm border border-gray-300 dark:border-[#3f3f3f]">Cancel</button>
+              <button onClick={performDeleteAccount} disabled={isDeleting} className={`px-3 py-1.5 rounded-md text-sm font-semibold ${isDeleting ? 'bg-red-300 text-white cursor-not-allowed' : 'bg-red-600 text-white hover:bg-red-700'}`}>
+                {isDeleting ? 'Deleting...' : 'Delete account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

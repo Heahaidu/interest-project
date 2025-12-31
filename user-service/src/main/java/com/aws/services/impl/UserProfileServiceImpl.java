@@ -34,4 +34,10 @@ public class UserProfileServiceImpl implements UserProfileService {
         Optional<UserProfile> userProfile = this.userProfileRepository.findById(uuid);
         return userProfile.orElse(null);
     }
+
+    @Override
+    public UserProfile findByUsername(String username) {
+        Optional<UserProfile> userProfile = this.userProfileRepository.findByUsername(username);
+        return userProfile.orElse(null);
+    }
 }

@@ -35,43 +35,55 @@ public class ApiAccountController {
     private final PasswordEncoder passwordEncoder;
     private final UserProfileService userProfileService;
     private final ImageStorageService imageStorageService;
-
+    private final DisAccountService disAccountService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AccountDTO dto) {
+
         if (dto.getEmail() == null || dto.getPassword() == null) {
             return ResponseEntity
                     .badRequest()
                     .body("Username or password cannot be null");
         }
 
-        Account account = accountService.getAccountByEmail(dto.getEmail());
+        String loginInput = dto.getEmail().trim();
+        Account account;
+
+        if (loginInput.contains("@")) {
+            account = accountService.getAccountByEmail(loginInput);
+        } else {
+            UserProfile userProfile = this.userProfileService.findByUsername(loginInput);
+            account = accountService.getAccountByUUID(userProfile.getAccountUuid());
+        }
+
         if (account == null) {
-            // account không tồn tại
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid email or password");
+                    .body("Invalid username/email or password");
         }
 
-        if (!account.getEmailVerified()) {
-            // gửi OTP nếu email chưa verify
-            String otp = String.valueOf(new Random().nextInt(900000) + 100000);
-            otpService.saveOtp(dto.getEmail(), otp);
-            mailService.sendMail(
-                    dto.getEmail(),
-                    "Mã OTP xác thực",
-                    "Mã OTP của bạn là: " + otp + "\nMã này sẽ hết hạn sau 5 phút."
-            );
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("Email not verified. OTP has been sent.");
-        }
 
-        boolean authOK = accountService.authenticate(dto.getEmail(), dto.getPassword());
+
+        boolean authOK = accountService.authenticate(account.getEmail(), dto.getPassword());
         if (!authOK) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid email or password");
+                    .body("Invalid username/email or password");
+        }
+
+        if (!account.getEmailVerified()) {
+            String otp = String.valueOf(new Random().nextInt(900000) + 100000);
+            otpService.saveOtp(account.getEmail(), otp);
+
+            mailService.sendMail(
+                    account.getEmail(),
+                    "Mã OTP xác thực",
+                    "Mã OTP của bạn là: " + otp + "\nMã này sẽ hết hạn sau 5 phút."
+            );
+
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body("Email not verified. OTP has been sent.");
         }
 
         String token;
@@ -86,9 +98,9 @@ public class ApiAccountController {
         account.setLastLoginAt(LocalDateTime.now());
         accountService.addOrUpdateAccount(account);
 
-        Map<String, String> result = Collections.singletonMap("token", token);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
+
 
     @RequestMapping("/secure/profile")
     @ResponseBody
@@ -103,6 +115,7 @@ public class ApiAccountController {
         response.setEmail(account.getEmail());
         response.setAvatarUrl(userProfile.getAvatarUrl());
         response.setBio(userProfile.getBio());
+        response.setUsername(userProfile.getUsername());
         response.setFirstName(userProfile.getFirstName());
         response.setLastName(userProfile.getLastName());
         response.setFullName(userProfile.getFullName());
@@ -123,6 +136,9 @@ public class ApiAccountController {
     @PostMapping("/register")
     public ResponseEntity<?> userRegisterAccount(@RequestBody AccountDTO a) {
         try {
+            if(!a.getPassword().equals(a.getPasswordConfirm()))
+                return ResponseEntity.badRequest().body("Password and Confirm password are not match");
+
             Account account = new Account();
             account.setRole(Account.Role.USER);
             account.setPasswordHash(a.getPassword());
@@ -132,6 +148,7 @@ public class ApiAccountController {
 
             UserProfile userProfile = new UserProfile();
             userProfile.setAccountUuid(accountSaved.getUuid());
+            userProfile.setUsername(a.getUsername());
             userProfile.setFirstName(a.getFirstName());
             userProfile.setLastName(a.getLastName());
             this.userProfileService.addOrUpdateUserProfile(userProfile);
@@ -149,7 +166,7 @@ public class ApiAccountController {
     }
 
 
-    @PostMapping("/verify-email")
+    @PostMapping("/verify")
     public ResponseEntity<?> verifyEmail(@RequestParam String email, @RequestParam String otp) {
         String cachedOtp = otpService.getOtp(email);
 
@@ -307,4 +324,20 @@ public class ApiAccountController {
             return ResponseEntity.status(500).body("Lỗi server: " + e.getMessage());
         }
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser(Principal principal) {
+        try {
+        String email = principal.getName();
+        Account account = this.accountService.getAccountByEmail(email);
+        this.disAccountService.addOrUpdateDisAccount(account);
+        this.accountService.deleteAccount(account);
+        return ResponseEntity.ok("Delete account successfully");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Lỗi server: " + e.getMessage());
+        }
+    }
+
 }

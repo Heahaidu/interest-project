@@ -12,6 +12,7 @@ public interface AccountService extends UserDetailsService {
     Account getAccountByEmail(String email);
     boolean authenticate(String email, String password);
     void deleteAccount(Account a);
+    Account getAccountByUUID(UUID uuid);
 
     Page<Account> findAllAccount(int page, int size);
 }

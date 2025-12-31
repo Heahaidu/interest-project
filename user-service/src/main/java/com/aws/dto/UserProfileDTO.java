@@ -13,4 +13,5 @@ public class UserProfileDTO {
     private String city;
     private String bio;
     private JsonNode socialLinks;
+    private Object privacySettings;
 }

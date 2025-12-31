@@ -21,4 +21,6 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> 
 //    Page<UserProfile> findByCity(String city);
 //
 //    Page<UserProfile> findByCityContainingIgnoreCase(String city);
+
+    Optional<UserProfile> findByUsername(String username);
 }

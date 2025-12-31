@@ -13,6 +13,7 @@ public class UserProfileResponseDTO {
     private String avatarUrl;
     private String bio;
 
+    private String username;
     private String firstName;
     private String lastName;
     private String fullName;

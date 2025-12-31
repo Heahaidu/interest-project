@@ -87,6 +87,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Account getAccountByUUID(UUID uuid) {
+        Optional<Account> account = this.accountRepository.findById(uuid);
+        return account.orElse(null);
+    }
+
+    @Override
     public Page<Account> findAllAccount(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return this.accountRepository.findAll(pageable);

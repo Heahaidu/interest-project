@@ -23,6 +23,9 @@ public class UserProfile {
     @Column(name = "account_uuid")
     private UUID accountUuid;
 
+    @Column(name = "username", nullable = false, length = 100)
+    private String username;
+
     @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
