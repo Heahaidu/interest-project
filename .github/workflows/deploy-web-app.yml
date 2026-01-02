@@ -39,7 +39,7 @@ jobs:
       - name: Build (static export)
         working-directory: ${{ env.FRONTEND_DIR }}
         env: 
-            NEXT_PUBLIC_API_BASE_URL: https://d2ld58h7aivb6c.cloudfront.net
+            NEXT_PUBLIC_API_BASE_URL: https://d3jvhwb9ziw4jf.cloudfront.net
         run: npm run build
 
       - name: Configure AWS credentials (OIDC)
