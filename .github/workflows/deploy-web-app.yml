@@ -11,7 +11,7 @@ on:
 permissions:
   id-token: write
   contents: read
-
+#
 env:
   AWS_REGION: us-east-1
   FRONTEND_DIR: front-end
