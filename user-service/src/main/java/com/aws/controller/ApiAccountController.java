@@ -104,7 +104,6 @@ public class ApiAccountController {
 
     @RequestMapping("/secure/profile")
     @ResponseBody
-    @CrossOrigin
     public ResponseEntity<?> getProfile(Principal principal) {
         Account account = accountService.getAccountByEmail(principal.getName());
         UserProfile userProfile = userProfileService.findUserProfileById(account.getUuid());
