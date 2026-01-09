@@ -12,11 +12,10 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: us-east-1
-  PROJECT_NAME: interest-project
-  ECS_CLUSTER: interest-project-cluster
-  ECS_SERVICE: interest-project-svc-notification
-  ECR_REPOSITORY: interest-notification-service
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ECS_CLUSTER: ${{ vars.PROJECT_NAME }}-cluster
+  ECS_SERVICE: ${{ vars.PROJECT_NAME }}-service-${{ vars.SERVICE_B_NAME }}
+  ECR_REPOSITORY: ${{ vars.PROJECT_NAME }}-${{ vars.SERVICE_B_NAME }}-images
   CONTAINER_NAME: app
 
 jobs:
@@ -28,7 +27,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::852368830719:role/interest-project-github-deploy
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to ECR
