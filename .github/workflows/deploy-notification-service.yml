@@ -1,4 +1,4 @@
-name: deploy-notification-service
+name: deploy-notification-service-1.0
 
 on:
   push:
