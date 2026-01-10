@@ -1,4 +1,4 @@
-name: Front-end (Next.js) - build & deploy to S3
+name: Front-end (Next.js) - build & deploy to S3 1.0
 
 on:
   push:
