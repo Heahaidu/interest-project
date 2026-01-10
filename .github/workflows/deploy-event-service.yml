@@ -1,4 +1,4 @@
-name: deploy-event-service
+name: deploy-event-service-1.0
 
 on:
   push:
