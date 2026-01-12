@@ -18,6 +18,7 @@ export const authApi = {
     })
     return res;
   },
+  
   async getProfile() {
     const res = await apiClientAuth().get("/api/v1/user/auth/secure/profile")
     return res;

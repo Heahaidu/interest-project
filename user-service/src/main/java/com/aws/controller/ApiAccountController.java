@@ -1,13 +1,17 @@
 package com.aws.controller;
 
 
+import com.aws.common.ErrorCode;
 import com.aws.dto.AccountDTO;
 import com.aws.dto.UserProfileDTO;
 import com.aws.dto.UserProfileResponseDTO;
+import com.aws.exception.LoginException;
 import com.aws.pojo.Account;
 import com.aws.pojo.UserProfile;
 import com.aws.services.*;
 import com.aws.utils.JwtUtils;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,12 +42,10 @@ public class ApiAccountController {
     private final DisAccountService disAccountService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AccountDTO dto) {
+    public ResponseEntity<?> login(@RequestBody AccountDTO dto, HttpServletResponse response) {
 
         if (dto.getEmail() == null || dto.getPassword() == null) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Username or password cannot be null");
+            throw new LoginException(ErrorCode.LOGIN_FAILED);
         }
 
         String loginInput = dto.getEmail().trim();
@@ -57,18 +59,14 @@ public class ApiAccountController {
         }
 
         if (account == null) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid username/email or password");
+            throw new LoginException(ErrorCode.LOGIN_FAILED);
         }
 
 
 
         boolean authOK = accountService.authenticate(account.getEmail(), dto.getPassword());
         if (!authOK) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid username/email or password");
+            throw new LoginException(ErrorCode.LOGIN_FAILED);
         }
 
         if (!account.getEmailVerified()) {
@@ -81,24 +79,21 @@ public class ApiAccountController {
                     "Mã OTP của bạn là: " + otp + "\nMã này sẽ hết hạn sau 5 phút."
             );
 
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("Email not verified. OTP has been sent.");
+            throw new LoginException(ErrorCode.LOGIN_FAILED);
         }
 
         String token;
         try {
             token = JwtUtils.generateToken(account.getEmail(), account.getUuid());
         } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Could not create JWT");
+            throw new LoginException(ErrorCode.CREATE_TOKEN_FAILED);
         }
 
         account.setLastLoginAt(LocalDateTime.now());
         accountService.addOrUpdateAccount(account);
 
-        return ResponseEntity.ok(Collections.singletonMap("token", token));
+        response.addCookie(new Cookie("Authorization", token));
+        return ResponseEntity.ok(Map.of("status", "ok", "message", "login successful"));
     }
 
 
@@ -172,11 +167,11 @@ public class ApiAccountController {
         System.out.println("cachedOtp: " + cachedOtp);
 
         if (cachedOtp == null) {
-            return ResponseEntity.status(404).body("OTP đã hết hạn");
+            return ResponseEntity.status(404).body("OTP expired");
         }
 
         if (!cachedOtp.equals(otp)) {
-            return ResponseEntity.status(400).body("OTP không chính xác");
+            return ResponseEntity.status(400).body("OTP incorrect");
         }
         Account account = this.accountService.getAccountByEmail(email);
         account.setEmailVerified(Boolean.TRUE);
@@ -224,8 +219,8 @@ public class ApiAccountController {
         otpService.saveResetToken(email, resetToken);
 
         return ResponseEntity.ok(Map.of(
-                "message", "Xác minh OTP thành công",
-                "resetToken", resetToken
+                "status", "ok",
+                "message", "Verify successful"
         ));
     }
 
