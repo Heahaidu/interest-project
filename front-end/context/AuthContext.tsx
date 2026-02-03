@@ -58,17 +58,17 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
 
     const res = await authApi.login(email, password);
 
-    const token = res.data?.token;
-    if (!token) throw new Error("No token returned from login");
+    // const token = res.data?.token;
+    // if (!token) throw new Error("No token returned from login");
 
-    // store cookie
-    setCookie("token", token, {
-      maxAge: 7 * 24 * 60 * 60,
-      path: "/",
-      sameSite: "lax",
-    });
+    // // store cookie
+    // setCookie("token", token, {
+    //   maxAge: 7 * 24 * 60 * 60,
+    //   path: "/",
+    //   sameSite: "lax",
+    // });
 
-    console.log("AuthProvider.signIn: token set", token);
+    // console.log("AuthProvider.signIn: token set", token);
 
     // If backend returns user directly in login response, set it immediately
     const maybeUser = res.data?.user || res.data;

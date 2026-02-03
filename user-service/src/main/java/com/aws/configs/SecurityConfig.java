@@ -49,7 +49,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/user/page-follower-delete/**").permitAll()
                         .requestMatchers("/api/v1/user/page-follower/**").permitAll()
                         .requestMatchers("/api/v1/user/page-followers/**").permitAll()
-                        .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/actuator").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
