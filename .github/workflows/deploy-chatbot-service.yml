@@ -1,4 +1,4 @@
-name: deploy-chatbot-service
+name: deploy-chatbot-service-1.0
 
 on:
   push:

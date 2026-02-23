@@ -1,4 +1,4 @@
-name: deploy-event-service
+name: deploy-event-service-1.0
 
 on:
   push:
@@ -19,11 +19,15 @@ env:
   CONTAINER_NAME: app
 
 jobs:
-  deploy:
+  build:
+    name: Build & Push Image
     runs-on: ubuntu-latest
+    # needs: []
+    outputs:
+      image: ${{ steps.build.outputs.image }}
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -33,16 +37,29 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push
+      - name: Build & Push
         id: build
-        run: |
+        run: | 
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           IMAGE_URI="$ACCOUNT_ID.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${GITHUB_SHA}"
-
+  
           docker build -t "$IMAGE_URI" ./event-service
           docker push "$IMAGE_URI"
 
-          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+           echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+           
+  deploy:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Download current task definition from ECS
         run: |
@@ -62,7 +79,7 @@ jobs:
         with:
           task-definition: taskdef.json
           container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build.outputs.image }}
+          image: ${{ needs.build.outputs.image }}
 
       - name: Deploy new task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
