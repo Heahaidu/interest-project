@@ -55,11 +55,10 @@ This repository showcases **three distinct DevOps deployment patterns** across d
 
 ---
 
-## 2) Infrastructure as Code (CloudFormation)
+## 2) Infrastructure as Code (CloudFormation/Terraform)
 
-**Template:** [`infra.json`](./infra.json) (all-in-one stack)
 
-The CloudFormation template provisions networking, compute, data, edge delivery, and CI/CD IAM integration.
+The CloudFormation/Terraform template provisions networking, compute, data, edge delivery, and CI/CD IAM integration.
 
 ### 2.1 Networking (VPC)
 
