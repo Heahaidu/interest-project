@@ -1,14 +1,34 @@
 # Architecture, Infrastructure as Code (IaC) & CI/CD
 
-This repository contains:
-- A **Next.js frontend** deployed as a static website to **S3 + CloudFront**
-- Four **Spring Boot microservices** deployed to **ECS Fargate**
+## 🛠️ Tech Stack & Skills Demonstrated
+
+<div align="center">
+
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat&logo=amazonaws&logoColor=white) ![CloudFormation](https://img.shields.io/badge/CloudFormation-FF4F8B?style=flat&logo=amazonaws&logoColor=white) ![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=flat&logo=terraform&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white) ![ECS Fargate](https://img.shields.io/badge/ECS_Fargate-FF9900?style=flat&logo=amazonaws&logoColor=white) ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white)
+![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=flat&logo=jenkins&logoColor=white) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=flat&logo=springboot&logoColor=white) ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white) ![Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?style=flat&logo=apachekafka&logoColor=white)
+
+</div>
+
+This application contains:
+- A **Next.js frontend** deployed as a **CSR** (Client Site Rendering) website to **S3 + CloudFront**
+- Four **Spring Boot microservices**
   - `user-service`
   - `chatbot-service`
   - `event-service`
   - `notification-service`
-- Supporting infrastructure provisioned via **AWS CloudFormation (JSON template)**
-- Automated delivery via **GitHub Actions** using **AWS IAM OIDC**
+
+---
+
+## 🔧 Infrastructure & Delivery Approaches
+
+This repository showcases **three distinct DevOps deployment patterns** across different projects/branches, demonstrating flexibility across toolchains:
+
+| Approach | IaC | CI/CD | Orchestration |
+|----------|-----|-------|---------------|
+| **A** | AWS CloudFormation | GitHub Actions + OIDC | ECS Fargate |
+| **B** | Terraform | Jenkins | ECS Fargate |
+| **C** | Terraform | Jenkins | Kubernetes |
 
 ---
 
