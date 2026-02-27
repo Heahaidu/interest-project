@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "chatbot-service/**"
+      # - "chatbot-service/**"
       - ".github/workflows/deploy-chatbot-service.yml"
 
 permissions:
