@@ -6,10 +6,7 @@ pipeline {
         PROJECT_NAME = 'interest-project'
         ECS_CLUSTER = 'interest-project-cluster'
     }
-    tools {
-        maven "M3"
-    }
-
+    
     stages {
         // user-service
         stage('Build & Push: user-service') {
