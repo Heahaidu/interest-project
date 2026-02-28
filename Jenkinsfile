@@ -106,7 +106,7 @@ pipeline {
 def buildAndPush(String serviceName, String contextPath) {
     def imageTag = "${ECR_REGISTRY}/${PROJECT_NAME}/${serviceName}:${env.GIT_COMMIT[0..6]}"
 
-    withCredentials(credentials: 'interest-project-jenkins', region: env.AWS_REGION) {
+    withAWS(credentials: 'interest-project-jenkins', region: env.AWS_REGION) {
         sh "aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
         sh "docker build -t ${imageTag} ${contextPath}"
         sh "docker push ${imageTag}"
