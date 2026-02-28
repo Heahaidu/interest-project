@@ -109,7 +109,7 @@ pipeline {
 def buildAndPush(String serviceName, String contextPath) {
     def imageTag = "${ECR_REGISTRY}/${PROJECT_NAME}/${serviceName}:${env.GIT_COMMIT[0..6]}"
 
-    withAWS(credentials: 'aws-credentials', region: env.REGION) {
+    withAWS(credentials: 'aws-credentials', region: env.AWS_REGION) {
         sh "aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
         sh "docker build -t ${imageTag} ${contextPath}"
         sh "docker push ${imageTag}"
@@ -120,8 +120,8 @@ def buildAndPush(String serviceName, String contextPath) {
 def deployECS(String serviceName) {
     def envKey   = "IMAGE_TAG_${serviceName.toUpperCase().replace('-','_')}"
     def imageTag = env[envKey]
-    def taskFamily = ${serviceName}
-    def ecsService = "${PROJECT_NAME}-cluster"
+    def taskFamily = "${serviceName}"
+    def ecsService = "${serviceName}"
 
     withAWS(credentials: 'aws-credentials', region: env.AWS_REGION) {
         sh """
@@ -144,7 +144,11 @@ def deployECS(String serviceName) {
                 --cluster ${ECS_CLUSTER} \
                 --service ${ecsService} \
                 --task-definition \$NEW_REVISION
+        """
+    }
 
+    timeout(time: 10, unit: 'MINUTES') {
+        sh """
             aws ecs wait services-stable \
                 --cluster "${ECS_CLUSTER}" \
                 --services "${serviceName}"
