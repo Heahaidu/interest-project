@@ -122,11 +122,6 @@ resource "aws_s3_bucket_public_access_block" "s3_images_acls" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_policy" "s3_images_policy" {
-  bucket = aws_s3_bucket.s3_images.id
-  policy = data.aws_iam_policy_document.s3_images_policy_docs.json
-}
-
 data "aws_iam_policy_document" "s3_images_policy_docs" {
   statement {
     sid       = "PublicReadGetObject"
@@ -139,6 +134,11 @@ data "aws_iam_policy_document" "s3_images_policy_docs" {
       identifiers = ["*"]
     }
   }
+}
+
+resource "aws_s3_bucket_policy" "s3_images_policy" {
+  bucket = aws_s3_bucket.s3_images.id
+  policy = data.aws_iam_policy_document.s3_images_policy_docs.json
 }
 
 resource "aws_s3_bucket" "s3_web" {
@@ -1160,7 +1160,7 @@ resource "aws_apigatewayv2_stage" "api_gateway_stage" {
 }
 
 resource "aws_cloudfront_origin_access_control" "web_aoc" {
-  name                              = "${var.project_name}-web-oac"
+  name                              = "${var.project_name}-web-oac-dev"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
