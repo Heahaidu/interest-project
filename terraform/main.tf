@@ -185,7 +185,7 @@ resource "aws_db_instance" "databases" {
   storage_encrypted       = true
   publicly_accessible     = false
   deletion_protection     = false
-  # skip_final_snapshot     = true
+  skip_final_snapshot     = true
 }
 
 resource "aws_security_group" "alb_security_group" {
