@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker { 'heahaidu/docker-aws' }
+        label 'docker-aws'
     }
     environment {
         AWS_REGION = 'us-east-1'
@@ -19,7 +19,6 @@ pipeline {
                     } catch (Exception ex) {
                         error("Agent inactive")
                     }
-                    
                 }
             }
         }
