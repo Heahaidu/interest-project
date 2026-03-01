@@ -1,0 +1,19 @@
+services:
+  jenkins:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: jenkins-master
+    restart: unless-stopped
+    image: jenkins
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - jenkins_home:/var/jenkins_home
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    user: root
+
+volumes:
+  jenkins_home:
+    driver: local
