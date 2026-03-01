@@ -118,7 +118,7 @@ pipeline {
 def buildAndPush(String serviceName, String contextPath) {
     def imageTag = "${ECR_REGISTRY}/${PROJECT_NAME}/${serviceName}:${env.GIT_COMMIT[0..6]}"
 
-    withAWS(credentials: 'interest-project-jenkins', region: env.AWS_REGION) {
+    withAWS(credentials: 'aws-creds', region: env.AWS_REGION) {
         sh "aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
         sh "docker build -t ${imageTag} ${contextPath}"
         sh "docker push ${imageTag}"
@@ -132,7 +132,7 @@ def deployECS(String serviceName) {
     def taskFamily = "${serviceName}"
     def ecsService = "${serviceName}"
 
-    withAWS(credentials: 'interest-project-jenkins', region: env.AWS_REGION) {
+    withAWS(credentials: 'aws-creds', region: env.AWS_REGION) {
         sh """
             TASK_DEF=\$(aws ecs describe-task-definition \
                 --task-definition ${taskFamily} \
