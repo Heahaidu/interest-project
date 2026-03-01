@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'docker-aws'
-    }
+    agent any
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REGISTRY = '852368830719.dkr.ecr.us-east-1.amazonaws.com'
