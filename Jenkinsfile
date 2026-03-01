@@ -127,8 +127,7 @@ def buildAndPush(String serviceName, String contextPath) {
 }
 
 def deployECS(String serviceName) {
-    def envKey   = "IMAGE_TAG_${serviceName.toUpperCase().replace('-','_')}"
-    def imageTag = env[envKey]
+    def imageTag = "${ECR_REGISTRY}/${PROJECT_NAME}/${serviceName}:${env.GIT_COMMIT[0..6]}"
     def taskFamily = "${serviceName}"
     def ecsService = "${serviceName}"
 
