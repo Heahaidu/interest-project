@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'docker-aws'
+        docker { 'heahaidu/docker-aws' }
     }
     environment {
         AWS_REGION = 'us-east-1'
@@ -10,6 +10,19 @@ pipeline {
     }
 
     stages {
+        stage('Check agent') {
+            steps {
+                script {
+                    try {
+                        def agentStatus = sh(script: 'Agent alive', returnStdout: true).trim()
+                        echo "Agent alive"
+                    } catch (Exception ex) {
+                        error("Agent inactive")
+                    }
+                    
+                }
+            }
+        }
         // user-service
         stage('Build & Push: user-service') {
             when {
