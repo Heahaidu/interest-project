@@ -122,7 +122,6 @@ def buildAndPush(String serviceName, String contextPath) {
         sh "aws ecr get-login-password | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
         sh "docker build -t ${imageTag} ${contextPath}"
         sh "docker push ${imageTag}"
-        env["IMAGE_TAG_${serviceName.toUpperCase().replace('-','_')}"] = imageTag
     }
 }
 
