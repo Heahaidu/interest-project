@@ -14,7 +14,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        def agentStatus = sh(script: 'Agent alive', returnStdout: true).trim()
+                        def agentStatus = sh(script: 'echo "Agent is alive"', returnStdout: true).trim()
                         echo "Agent alive"
                     } catch (Exception ex) {
                         error("Agent inactive")
