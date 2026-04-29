@@ -11,6 +11,7 @@ spec:
     path: k8s/manifests/infrastructure/redis/overlays/dev
   destination:
     server: https://kubernetes.default.svc
+    namespace: dev
   syncPolicy:
     syncOptions:
     - CreateNamespace=true
