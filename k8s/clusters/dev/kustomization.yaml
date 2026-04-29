@@ -4,4 +4,3 @@ kind: Kustomization
 resources:
   - k8s/clusters/dev/apps
   - k8s/clusters/dev/infra
-  - k8s/clusters/dev/namespaces
