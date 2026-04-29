@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatbot-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatbot-service
+  template:
+    spec:
+      containers: 
+        - name: chatbot-service
+          image: heahaidu/interest.chatbot-service

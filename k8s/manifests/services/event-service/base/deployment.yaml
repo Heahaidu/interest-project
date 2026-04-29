@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: event-service
+spec: 
+  replicas: 1
+  strategy: 
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector: 
+    matchLabels:
+      app: event-service
+  template:
+    metadata: 
+      labels:
+        app: event-service
+    spec: 
+      containers:
+        - name: event-service
+          image: heahaidu/interest.event-service
+          ports:
+            - name: http
+              containerPort: 8080

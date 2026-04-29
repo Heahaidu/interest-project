@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-service
+  template:
+    spec:
+      containers: 
+        - name: event-service
+          image: heahaidu/interest.event-service

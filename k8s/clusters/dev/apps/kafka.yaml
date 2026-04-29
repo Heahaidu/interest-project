@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infrastructure
+spec:
+  project: default
+  source: 
+    repoURL: https://github.com/Heahaidu/interest-project
+    targetRevision: main
+    path: k8s/manifests/infrastructure/kafka/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+
+    automated:
+      selfHeal: true
+      prune: true
