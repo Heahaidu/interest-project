@@ -1,3 +1,4 @@
 resources:
   - kafka.yaml
   - redis.yaml
+  - chatbot-service.yaml
