@@ -1,6 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  mane: chatbot-service
+  name: chatbot-service-cm
 data:
   APP_ENV: default
+  DATA_SOURCE_URL: jdbc:postgresql://chatbot-db-service:5432/postgres
+  KAFKA_BOOTSTRAP_SERVERS: kafka-service:9092

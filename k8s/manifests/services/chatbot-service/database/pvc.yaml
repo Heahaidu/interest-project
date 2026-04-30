@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVoluneClaim
 metadata:
-  name: postgress-pvc
+  name: chatbot-db-pvc
 spec:
   accessModes:
     - ReadWriteOnce

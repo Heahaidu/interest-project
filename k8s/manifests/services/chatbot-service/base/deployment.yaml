@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: chatbot-service
+  name: chatbot-dev
 spec: 
   replicas: 1
   strategy: 
@@ -11,11 +11,11 @@ spec:
     type: RollingUpdate
   selector: 
     matchLabels:
-      app: chatbot-service
+      app: chatbot-dev
   template:
     metadata: 
       labels:
-        app: chatbot-service
+        app: chatbot-dev
     spec: 
       containers:
         - name: chatbot-service
@@ -23,3 +23,17 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+      env:
+        - name: DATA_SOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-db-secret
+              key: POSTGRES_DB
+        - name: DATA_SOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-db-secret
+              key: POSTGRES_PASSWORD
+      envFrom:
+        - configMapRef:
+            name: chatbot-db-cm

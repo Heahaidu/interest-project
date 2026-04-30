@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatbot-db-service
+spec:
+  selector:
+    app: chatbot-db
+  ports:
+    - port: 5432
+      targetPort: 5432
