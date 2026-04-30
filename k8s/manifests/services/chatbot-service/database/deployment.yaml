@@ -13,8 +13,8 @@ spec:
         app: chatbot-db-dev
     spec:
       containers:
-        - name: postgress
-          image: postgress:16
+        - name: postgres
+          image: postgres:16
           ports:
             - containerPort: 5432
           env:
