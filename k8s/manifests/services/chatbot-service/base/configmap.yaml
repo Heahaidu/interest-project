@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: chatbot-service-cm
+  name: chatbot-configmap
 data:
   APP_ENV: default
   DATA_SOURCE_URL: jdbc:postgresql://chatbot-db-service:5432/postgres

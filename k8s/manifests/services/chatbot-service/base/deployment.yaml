@@ -36,4 +36,4 @@ spec:
               key: POSTGRES_PASSWORD
       envFrom:
         - configMapRef:
-            name: chatbot-db-cm
+            name: chatbot-configmap
