@@ -4,7 +4,7 @@ metadata:
   name: chatbot-db-service
 spec:
   selector:
-    app: chatbot-db
+    app: chatbot-db-dev
   ports:
     - port: 5432
       targetPort: 5432

@@ -23,17 +23,17 @@ spec:
           ports:
             - name: http
               containerPort: 8080
-      env:
-        - name: DATA_SOURCE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: chatbot-db-secret
-              key: POSTGRES_DB
-        - name: DATA_SOURCE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: chatbot-db-secret
-              key: POSTGRES_PASSWORD
-      envFrom:
-        - configMapRef:
-            name: chatbot-configmap
+          env:
+            - name: DATA_SOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chatbot-db-secret
+                  key: POSTGRES_USER
+            - name: DATA_SOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chatbot-db-secret
+                  key: POSTGRES_PASSWORD
+          envFrom:
+            - configMapRef:
+                name: chatbot-configmap

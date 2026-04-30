@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgress
+      app: chatbot-db-dev
   template:
     metadata:
       labels:
-        app: postgress
+        app: chatbot-db-dev
     spec:
       containers:
         - name: postgress
@@ -36,4 +36,4 @@ spec:
     volumes:
       - name:  postgress-storage
         PersistentVoluneClaim:
-          claimName: postgress-pvc
+          claimName: chatbot-db-pvc
