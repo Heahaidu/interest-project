@@ -33,7 +33,7 @@ spec:
                 secretKeyRef:
                   name: chatbot-db-secret
                   key: POSTGRES_PASSWORD
-    volumes:
-      - name: postgress-storage
-        persistentVolumeClaim:
-          claimName: chatbot-db-pvc
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: chatbot-db-pvc
