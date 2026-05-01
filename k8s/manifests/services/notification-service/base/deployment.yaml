@@ -36,6 +36,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: notification-db-secret
+                  key: POSTGRES_PASSWORD
             - name: MAIL_USERNAME
               valueFrom:
                 secretKeyRef:
