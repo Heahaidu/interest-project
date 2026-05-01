@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: event-db-pvc
+  name: notification-db-pvc
 spec:
   accessModes:
     - ReadWriteOnce
