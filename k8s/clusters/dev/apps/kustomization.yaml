@@ -3,5 +3,5 @@ resources:
   - redis.yaml
   - chatbot-service.yaml
   - event-service.yaml
-  - notification-server.yaml
+  - notification-service.yaml
   - user-service.yaml
