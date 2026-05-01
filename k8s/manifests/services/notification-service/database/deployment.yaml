@@ -25,11 +25,6 @@ spec:
               cpu: 100m
               memory: 192Mi
           env:
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: notification-db-secret
-                  key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
