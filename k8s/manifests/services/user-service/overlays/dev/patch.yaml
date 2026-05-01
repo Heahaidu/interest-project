@@ -1,14 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-service
+  name: user-service-dev    
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user-service
+      app: user-service-dev
   template:
     spec:
       containers: 
         - name: user-service
           image: heahaidu/interest.user-service
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 192Mi

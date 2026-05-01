@@ -1,6 +1,17 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  mane: notification-service
+  name: notification-service-configmap
 data:
-  APP_ENV: default
+  APP_ENV: default  
+  MAIL_FROM: noreply@yourdomain.com
+  MAIL_FROM_NAME: Event Platform
+  MAIL_HOST: smtp.gmail.com
+  MAIL_PORT: 587
+  KAFKA_BOOTSTRAP_SERVERS: kafka-service:9092
+  KAFKA_NOTIFICATION_TOPIC: notification-events
+  DATA_SOURCE_URL: jdbc:postgresql://notification-db-service:5432/postgres
+  PORT: "8080"
+  APPLICATION_NAME: notification-service
+  REDIS_HOST: redis-service
+  REDIS_PORT: 6379

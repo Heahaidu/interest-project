@@ -1,14 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: event-service
+  name: event-service-dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: event-service
+      app: event-service-dev
   template:
     spec:
       containers: 
         - name: event-service
           image: heahaidu/interest.event-service
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 192Mi

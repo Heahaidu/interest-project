@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chatbot-dev
+  name: chatbot-service-dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: chatbot-dev
+      app: chatbot-service-dev
   template:
     spec:
       containers: 

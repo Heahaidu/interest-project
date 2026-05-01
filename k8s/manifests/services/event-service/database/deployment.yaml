@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-db-dev
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-db-dev
+  template:
+    metadata:
+      labels:
+        app: event-db-dev
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 192Mi
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: event-db-secret
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: event-db-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: event-db-secret
+                  key: POSTGRES_PASSWORD
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: event-db-pvc

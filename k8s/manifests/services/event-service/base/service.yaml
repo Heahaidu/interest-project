@@ -4,7 +4,7 @@ metadata:
   name: event-service
 spec: 
   selector:
-    app: event-service
+    app: event-service-dev
   ports:
     - name: http
       port: 80

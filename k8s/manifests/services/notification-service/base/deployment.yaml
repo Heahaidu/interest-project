@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: notification-service
+  name: notification-service-dev
 spec: 
   replicas: 1
   strategy: 
@@ -11,11 +11,11 @@ spec:
     type: RollingUpdate
   selector: 
     matchLabels:
-      app: notification-service
+      app: notification-service-dev
   template:
     metadata: 
       labels:
-        app: notification-service
+        app: notification-service-dev
     spec: 
       containers:
         - name: notification-service
@@ -23,3 +23,26 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+          envFrom:
+            - configMapRef: 
+                name: notification-service-configmap
+          env:
+            - name: DATA_SOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: notification-db-secret
+                  key: POSTGRES_USER
+            - name: DATA_SOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notification-db-secret
+            - name: MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secret
+                  key: MAIL_USERNAME
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: notification-service-secret
+                  key: MAIL_PASSWORD

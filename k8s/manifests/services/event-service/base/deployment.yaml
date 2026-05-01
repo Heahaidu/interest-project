@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: event-service
+  name: event-service-dev
 spec: 
   replicas: 1
   strategy: 
@@ -11,11 +11,11 @@ spec:
     type: RollingUpdate
   selector: 
     matchLabels:
-      app: event-service
+      app: event-service-dev
   template:
     metadata: 
       labels:
-        app: event-service
+        app: event-service-dev
     spec: 
       containers:
         - name: event-service
@@ -23,3 +23,17 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+          env:
+            - name: DATA_SOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: event-db-secret
+                  key: POSTGRES_USER
+            - name: DATA_SOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: event-db-secret
+                  key: POSTGRES_PASSWORD
+          envFrom:
+            - configMapRef:
+                name: event-service-configmap

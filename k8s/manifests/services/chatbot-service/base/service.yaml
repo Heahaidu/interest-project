@@ -4,7 +4,7 @@ metadata:
   name: chatbot-service
 spec: 
   selector:
-    app: chatbot-dev
+    app: chatbot-service-dev
   ports:
     - name: http
       port: 80

@@ -1,6 +1,18 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  mane: event-service
+  name: event-service-configmap
 data:
   APP_ENV: default
+
+  FRONTEND_BASE_URL: http://localhost:3000
+  KAFKA_BOOTSTRAP_SERVERS: kafka-service:9092
+  KAFKA_NOTIFICATION_TOPIC: notification-events
+  KAFKA_AICHATBOX_TOPIC: event-created
+  DATA_SOURCE_URL: jdbc:postgresql://event-db-service:5432/postgres
+  PORT: "8080"
+  APPLICATION_NAME: event-service
+  AWS_ACCESS_KEY_ID: ""
+  AWS_SECRET_ACCESS_KEY: ""
+  AWS_REGION: us-east-1
+  AS_BUCKET_NAME: ""
