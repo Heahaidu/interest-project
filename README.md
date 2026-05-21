@@ -34,7 +34,7 @@ This repository showcases **three distinct DevOps deployment patterns** across d
 
 ## 1) System Architecture
 
-![System Architecture](./docs/images/architecture.jpg)
+![System Architecture](./docs/images/architecture.png)
 
 ### Components
 
