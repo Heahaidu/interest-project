@@ -28,7 +28,7 @@ This repository showcases **three distinct DevOps deployment patterns** across d
 |----------|-----|-------|---------------|
 | **A** | AWS CloudFormation | GitHub Actions + OIDC | ECS Fargate |
 | **B** | Terraform | Jenkins | ECS Fargate |
-| ~~**C**~~ | ~~Terraform~~ | ~~Jenkins~~ | ~~Kubernetes~~ |
+| **C** | ~~Terraform~~ | ~~Jenkins~~ | Kubernetes |
 
 ---
 
